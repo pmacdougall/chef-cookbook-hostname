@@ -63,32 +63,39 @@ if fqdn
     end
 
   when 'centos', 'redhat', 'amazon', 'scientific'
-    service 'network' do
-      action :nothing
-    end
-    hostfile = '/etc/sysconfig/network'
-    file hostfile do
-      action :create
-      content lazy {
-        ::IO.read(hostfile).gsub(/^HOSTNAME=.*$/, "HOSTNAME=#{fqdn}")
-      }
-      notifies :reload, 'ohai[reload_hostname]', :immediately
-      notifies :restart, 'service[network]', :delayed
-    end
-    # this is to persist the correct hostname after machine reboot
-    sysctl = '/etc/sysctl.conf'
-    file sysctl do
-      action :create
-      content lazy {
-        ::IO.read(sysctl) + "kernel.hostname=#{hostname}\n"
-      }
-      not_if { ::IO.read(sysctl) =~ /^kernel\.hostname=#{hostname}$/ }
-      notifies :reload, 'ohai[reload_hostname]', :immediately
-      notifies :restart, 'service[network]', :delayed
-    end
-    execute "hostname #{hostname}" do
-      only_if { node['hostname'] != hostname }
-      notifies :reload, 'ohai[reload_hostname]', :immediately
+    if node['platform_version'].to_f >= 7
+      execute "hostnamectl set-hostname #{hostname}" do
+        only_if { node['hostname'] != hostname }
+        notifies :reload, 'ohai[reload_hostname]', :immediately
+      end
+    else
+      service 'network' do
+        action :nothing
+      end
+      hostfile = '/etc/sysconfig/network'
+      file hostfile do
+        action :create
+        content lazy {
+          ::IO.read(hostfile).gsub(/^HOSTNAME=.*$/, "HOSTNAME=#{fqdn}")
+        }
+        notifies :reload, 'ohai[reload_hostname]', :immediately
+        notifies :restart, 'service[network]', :delayed
+      end
+      # this is to persist the correct hostname after machine reboot
+      sysctl = '/etc/sysctl.conf'
+      file sysctl do
+        action :create
+        content lazy {
+          ::IO.read(sysctl) + "kernel.hostname=#{hostname}\n"
+        }
+        not_if { ::IO.read(sysctl) =~ /^kernel\.hostname=#{hostname}$/ }
+        notifies :reload, 'ohai[reload_hostname]', :immediately
+        notifies :restart, 'service[network]', :delayed
+      end
+      execute "hostname #{hostname}" do
+        only_if { node['hostname'] != hostname }
+        notifies :reload, 'ohai[reload_hostname]', :immediately
+      end
     end
   else
     file '/etc/hostname' do
