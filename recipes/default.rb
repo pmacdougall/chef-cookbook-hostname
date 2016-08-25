@@ -63,7 +63,8 @@ if fqdn
     end
 
   when 'centos', 'redhat', 'amazon', 'scientific'
-    if node['platform_version'].to_f >= 7
+    # amazon linux does not support hostnamectl
+    if node['platform_version'].to_f >= 7 && node['platform'] != 'amazon'
       execute "hostnamectl set-hostname #{hostname}" do
         only_if { node['hostname'] != hostname }
         notifies :reload, 'ohai[reload_hostname]', :immediately
