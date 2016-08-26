@@ -5,6 +5,8 @@
  - #1: for fqdns on 127.0.0.1, write localhost after the fqdn record (https://github.com/kevit)
  - #2: substitute underscores in hostnames to support chef node names w/ underscores (https://github.com/joshsmoore)
  - #5: centos 7 support with hostnamectl (https://github.com/gene1wood)
+ - 0.4.1: exclude hostnamectl from amazon distro
+
 
 0.3.0
 =====
