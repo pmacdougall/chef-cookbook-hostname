@@ -6,12 +6,12 @@ require 'bundler/setup'
 require 'shellwords'
 
 class Cookbook < Thor
-  COOKBOOK_NAME = 'hostnames'
-  COOKBOOK_CATEGORY = 'utilities'
+  COOKBOOK_NAME = 'hostnames'.freeze
+  COOKBOOK_CATEGORY = 'utilities'.freeze
 
   include Thor::Actions
 
-  desc :edit, "Edit cookbook in browser"
+  desc :edit, 'Edit cookbook in browser'
   def edit
     open "http://community.opscode.com/cookbooks/#{COOKBOOK_NAME}/edit"
   end
@@ -33,9 +33,9 @@ class Cookbook < Thor
   end
 
   def open_cmd
-    @open_cmd ||= %w[open xdg-open].find do |command|
+    @open_cmd ||= %w(open xdg-open).find do |command|
       system "which #{command} >/dev/null 2>&1"
-      $?.success?
+      $CHILD_STATUS.success?
     end
   end
 end
