@@ -73,10 +73,10 @@ You do not need to set `node["set_fqdn"]`.
 
 * Pull request.
 
-* I will bump version and run:
+* I will bump version and run (from batali):
 
 ```
-knife cookbook site share hostnames "Networking" -o ../ -u nt -k ~/.ssh/chef-nt.pem -VV
+batali knife cookbook site share hostnames "Networking" -o ../ -u nt -k ~/.ssh/chef-nt.pem -VV
 ```
 
 ## Author
