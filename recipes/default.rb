@@ -77,7 +77,7 @@ if fqdn
       file hostfile do
         action :create
         content lazy {
-          ::IO.read(hostfile).gsub(/^HOSTNAME=.*$/, "HOSTNAME=#{fqdn}")
+          ::IO.read(hostfile).gsub(/^HOSTNAME=.*$/, "HOSTNAME=#{hostname}.#{domain}")
         }
         notifies :reload, 'ohai[reload_hostname]', :immediately
         notifies :restart, 'service[network]', :delayed
